@@ -63,6 +63,7 @@ Once unlocked, users are greeted by three floating neon-accented heart gift boxe
   - Hand-crafted 2-tier pastel birthday cake topped with 7 flickering candle flames.
   - Click/tap each candle to blow it out individually, or press `Space`/`Enter` to extinguish all at once.
   - Triggers a celebratory confetti explosion and reveals a birthday banner.
+  - Sprinkles five personal Love GIFs around the screen, keeping them clear of the cake and candles.
 
 - **💌 Box 3: 3D Perspective Polaroid & Live Typewriter Letter**
   - 3D tilted Polaroid photo adorned with an ornate purple ribbon bow.

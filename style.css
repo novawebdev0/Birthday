@@ -499,7 +499,6 @@ html, body {
   object-fit: contain;
   display: block;
 }
-
 .prompt-text {
   flex-shrink: 0;
   font-family: 'Chewy', 'Fredoka', 'Sniglet', cursive, sans-serif;
@@ -1164,7 +1163,9 @@ html, body {
   text-align: center;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   animation: cardPopIn 0.5s cubic-bezier(0.34, 1.45, 0.64, 1);
-  overflow: hidden;
+  max-height: 94vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   box-sizing: border-box;
 }
 
@@ -1190,6 +1191,26 @@ html, body {
   margin: 0 auto;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; user-select: none;
+}
+.love-gif-sprinkle {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  pointer-events: none;
+}
+.love-sprinkle-gif {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(126, 13, 27, 0.25));
+}
+@media (max-width: 768px) {
+  .love-sprinkle-gif {
+    width: 54px;
+    height: 54px;
+  }
 }
 .cake-svg-wrap {
   width: 100%; height: 100%;
@@ -1652,8 +1673,8 @@ html, body {
   }
   .cake-interactive-stage {
     max-width: 100%;
-    aspect-ratio: 920 / 580;
-    height: auto;
+    aspect-ratio: auto;
+    height: min(52vh, 420px);
     cursor: pointer;
   }
 

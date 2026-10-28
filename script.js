@@ -115,7 +115,7 @@ function submitBirthdayDate() {
   }
 
   if (enteredDigits === TARGET_PASSCODE) {
-    // Correct Passcode (2005) - Directly transition to the Surprise Question Screen
+    // Correct Passcode - Directly transition to the Surprise Question Screen
     const danceGif = document.getElementById('dance-gif');
     if (danceGif) {
       danceGif.src = DANCE_GIF_URL;
@@ -346,13 +346,64 @@ function openCakeModal() {
   launchConfetti();
   resetCake();
   const modal = document.getElementById('cake-modal');
-  if (modal) modal.classList.remove('hidden');
+  if (modal) {
+    modal.classList.remove('hidden');
+    requestAnimationFrame(scatterLoveGifs);
+  }
 }
 
 function closeCakeModal() {
   const modal = document.getElementById('cake-modal');
   if (modal) modal.classList.add('hidden');
 }
+
+function scatterLoveGifs() {
+  const modal = document.getElementById('cake-modal');
+  const sprinkleLayer = document.getElementById('love-gif-sprinkle');
+  if (!modal || modal.classList.contains('hidden') || !sprinkleLayer) return;
+
+  const layerRect = sprinkleLayer.getBoundingClientRect();
+  const protectedElements = [
+    document.getElementById('two-tier-cake-group'),
+    ...document.querySelectorAll('.candle-item')
+  ].filter(Boolean);
+  const protectedRects = protectedElements.map(element => {
+    const rect = element.getBoundingClientRect();
+    return {
+      left: rect.left - layerRect.left - 10,
+      top: rect.top - layerRect.top - 10,
+      right: rect.right - layerRect.left + 10,
+      bottom: rect.bottom - layerRect.top + 10
+    };
+  });
+  const gifs = [...sprinkleLayer.querySelectorAll('.love-sprinkle-gif')];
+  const size = gifs.length ? gifs[0].getBoundingClientRect().width : 76;
+  const placedRects = [];
+
+  for (const gif of gifs) {
+    let placed = false;
+    for (let attempt = 0; attempt < 300 && !placed; attempt++) {
+      const left = Math.random() * Math.max(0, layerRect.width - size);
+      const top = Math.random() * Math.max(0, layerRect.height - size);
+      const candidate = { left, top, right: left + size, bottom: top + size };
+      const overlaps = rect => candidate.left < rect.right
+        && candidate.right > rect.left
+        && candidate.top < rect.bottom
+        && candidate.bottom > rect.top;
+
+      if (protectedRects.some(overlaps) || placedRects.some(overlaps)) continue;
+      gif.style.left = `${left}px`;
+      gif.style.top = `${top}px`;
+      gif.style.transform = `rotate(${Math.random() * 24 - 12}deg)`;
+      placedRects.push(candidate);
+      placed = true;
+    }
+
+    gif.hidden = !placed;
+  }
+}
+
+window.addEventListener('resize', scatterLoveGifs);
 
 function blowCandle(num, e) {
   if (e) e.stopPropagation();
@@ -464,24 +515,20 @@ function closeGiftModal() {
 }
 
 /* ─── SPECIAL BOX 3: LOVE & BIRTHDAY LETTER (TYPEWRITER ANIMATION) ─── */
-const LETTER_SECTIONS = [
-  {
-    id: 'letter-headline-el',
-    text: "Happy birthday to my favourite\nperson! ❤️"
-  },
-  {
-    id: 'letter-p1-el',
-    text: "I hope this year brings you everything you've been wishing for and so much more. Thank you for making my days happier, my bad days easier, and my life a little more beautiful just by being in it. 🥺💖"
-  },
-  {
-    id: 'letter-p2-el',
-    text: "I'm so lucky to have you, and I can't wait to make a million more memories with you. Here's to you, your dreams, and all the happiness you deserve."
-  },
-  {
-    id: 'letter-closing-el',
-    text: "Happy birthday, my love. I love you more than you know. 🫶🏻🎂❤️"
-  }
+const LETTER_SECTION_IDS = [
+  'letter-headline-el',
+  'letter-p1-el',
+  'letter-p2-el',
+  'letter-closing-1-el',
+  'letter-closing-2-el',
+  'letter-closing-3-el'
 ];
+const LETTER_SECTIONS = LETTER_SECTION_IDS
+  .map(id => {
+    const element = document.getElementById(id);
+    return element ? { id, text: element.textContent.trim() } : null;
+  })
+  .filter(Boolean);
 
 let letterTypewriterTimer = null;
 let isLetterTyping = false;
