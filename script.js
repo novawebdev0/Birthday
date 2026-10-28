@@ -717,10 +717,7 @@ const handRotations = {
   hour: { previous: null, current: 0 }
 };
 const now = new Date();
-let targetDate = new Date(now.getFullYear(), 9, 31);
-if (targetDate <= now) {
-  targetDate = new Date(now.getFullYear() + 1, 9, 31);
-}
+const targetDate = new Date(now.getFullYear(), 9, 31);
 
 function updateClock(days, hours, minutes) {
   ddEl.textContent = pad(days);
@@ -761,11 +758,14 @@ function startCountdown() {
   const updateCountdown = () => {
     const remainingMs = targetDate.getTime() - Date.now();
     if (remainingMs <= 0) {
-      clearInterval(countdownTimer);
+      if (countdownTimer !== null) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
       updateClock(0, 0, 0);
       playMidnightChime();
       setTimeout(triggerMidnight, 700);
-      return;
+      return false;
     }
 
     const remainingMinutes = Math.ceil(remainingMs / 60000);
@@ -774,10 +774,12 @@ function startCountdown() {
     const minutes = remainingMinutes % 60;
     updateClock(days, hours, minutes);
     playTick();
+    return true;
   };
 
-  updateCountdown();
-  countdownTimer = setInterval(updateCountdown, 1000);
+  if (updateCountdown()) {
+    countdownTimer = setInterval(updateCountdown, 1000);
+  }
 }
 
 /* ─── MIDNIGHT REVEAL ─── */
